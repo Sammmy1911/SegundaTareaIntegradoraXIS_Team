@@ -43,8 +43,19 @@ public class Villager {
             Image image = new Image(getClass().getResourceAsStream("AssetsPerson/Villager/IDLE/v-idle-"+i+".png"));
             this.idle.add(image);
         }
+        for (int i=0; i<=6; i++){
+            Image image = new Image(getClass().getResourceAsStream("AssetsPerson/Villager/RUN/v-run-"+i+".png"));
+            this.runs.add(image);
+        }
+    }
 
-
+    public void paint(){
+        if(state == 0){
+            graphicsContext.drawImage(idle.get(0), position.getX(), position.getY());
+        }
+        else if(state == 1){
+            graphicsContext.drawImage(runs.get(0), position.getX(), position.getY());
+        }
     }
 
 
