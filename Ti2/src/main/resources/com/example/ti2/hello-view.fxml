@@ -8,6 +8,6 @@
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ti2.control.HelloController">
 
    <children>
-      <Canvas fx:id="canvas" height="409.0" layoutY="-3.0" width="600.0" focusTraversable="True" />
+      <Canvas fx:id="canvas" height="400.0" layoutY="0.0" width="600.0" focusTraversable="True" />
    </children>
 </AnchorPane>

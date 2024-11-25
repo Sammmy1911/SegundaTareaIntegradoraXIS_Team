@@ -49,7 +49,7 @@ public class Villager {
         }
     }
 
-    public void paint(){
+    public  void paint(){
         if(state == 0){
             graphicsContext.drawImage(idle.get(0), position.getX(), position.getY());
         }
