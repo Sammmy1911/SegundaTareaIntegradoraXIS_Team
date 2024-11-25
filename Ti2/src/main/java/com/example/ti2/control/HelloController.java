@@ -22,30 +22,31 @@ public class HelloController implements Initializable {
 
     private GraphicsContext graphicsContext;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
+
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        if (canvas == null) {
-            System.err.println("Canvas is null during initialization!");
-        } else {
+        if (canvas != null) {
             this.graphicsContext = canvas.getGraphicsContext2D();
             this.screen1 = new Screen1(this.canvas);
 
             new Thread(() -> {
                 while (true) {
-                    Platform.runLater(() -> screen1.paint());
+                    Platform.runLater(() -> {
+                        screen1.paint();
+                    });
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
+        } else {
+            System.err.println("Canvas is not initialized!");
         }
     }
-
 }

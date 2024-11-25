@@ -6,13 +6,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Screen1 {
-    private GraphicsContext graphicsContext;
     private Canvas canvas;
+    private GraphicsContext graphicsContext;
     private Villager villager;
 
     public Screen1(Canvas canvas) {
-        this.graphicsContext = this.canvas.getGraphicsContext2D();
         this.canvas = canvas;
+        this.graphicsContext = this.canvas.getGraphicsContext2D();
         this.villager = new Villager(this.canvas);
     }
 
