@@ -17,7 +17,7 @@ public class Screen1 {
     private Villager villager;
     private Image backgroundImage;
     private List<Obstacle> obstacles;
-    private Runnable onChangeScreen; // Agregamos un Runnable para manejar el cambio de pantalla
+    private Runnable onChangeScreen;
 
     public Screen1(Canvas canvas) {
         this.canvas = canvas;
@@ -25,12 +25,11 @@ public class Screen1 {
         this.villager = new Villager(this.canvas);
         this.backgroundImage = new Image("file:/C:/Users/sgall/Desktop/vambi/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/inside.png");
 
-        // Define some obstacles
         this.obstacles = new ArrayList<>();
-        this.obstacles.add(new Obstacle(20, 20, 10, 800));
-        this.obstacles.add(new Obstacle(30, 20, 500, 100));
-        this.obstacles.add(new Obstacle(330, 120, 500, 50));
-        this.obstacles.add(new Obstacle(550, 1700, 10, 800));
+        this.obstacles.add(new Obstacle(20, 20, 10, 800, "wall"));
+        this.obstacles.add(new Obstacle(30, 20, 500, 100, "wall"));
+        this.obstacles.add(new Obstacle(330, 120, 500, 50, "wall"));
+        this.obstacles.add(new Obstacle(550, 1700, 10, 800, "wall"));
 
         villager.setObstacles(obstacles);
     }
@@ -40,7 +39,8 @@ public class Screen1 {
     }
 
     public void paint() {
-        graphicsContext.drawImage(backgroundImage, 0, 0, canvas.getWidth(), canvas.getHeight());
+        clearCanvas();
+        drawBackground();
         villager.paint();
         showPlayerPosition();
         printPlayerPosition();
@@ -48,12 +48,12 @@ public class Screen1 {
         checkPositionForScreenChange();
     }
 
-    private void checkPositionForScreenChange() {
-        if (villager.getPosition().getX() == 120 && villager.getPosition().getY() == 350) { // Cambio de coordenadas
-            if (onChangeScreen != null) {
-                onChangeScreen.run(); // Notificamos a WindowManager que debe cambiar de pantalla
-            }
-        }
+    private void clearCanvas() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    private void drawBackground() {
+        graphicsContext.drawImage(backgroundImage, 0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     private void showPlayerPosition() {
@@ -72,11 +72,19 @@ public class Screen1 {
         }
     }
 
-    public void OnKeyPressed(KeyEvent event) {
+    private void checkPositionForScreenChange() {
+        if (villager.getPosition().getX() == 120 && villager.getPosition().getY() == 350) { // Cambio de coordenadas
+            if (onChangeScreen != null) {
+                onChangeScreen.run(); // Notificamos a WindowManager que debe cambiar de pantalla
+            }
+        }
+    }
+
+    public void onKeyPressed(KeyEvent event) {
         this.villager.OnKeyPressed(event);
     }
 
-    public void OnKeyReleased(KeyEvent event) {
+    public void onKeyReleased(KeyEvent event) {
         this.villager.onKeyReleased(event);
     }
 }

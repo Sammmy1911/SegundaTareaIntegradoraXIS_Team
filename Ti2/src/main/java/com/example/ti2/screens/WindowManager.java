@@ -20,11 +20,21 @@ public class WindowManager {
     }
 
     public void switchToScreen1() {
+        clearCurrentScreen();
         this.currentScreen = screen1;
     }
 
     public void switchToScreen2() {
+        clearCurrentScreen();
         this.currentScreen = screen2;
+    }
+
+    private void clearCurrentScreen() {
+        if (currentScreen instanceof Screen1) {
+            ((Screen1) currentScreen).paint();
+        } else if (currentScreen instanceof Screen2) {
+            ((Screen2) currentScreen).paint();
+        }
     }
 
     public void paintCurrentScreen() {
@@ -37,17 +47,17 @@ public class WindowManager {
 
     public void onKeyPressed(KeyEvent event) {
         if (currentScreen instanceof Screen1) {
-            ((Screen1) currentScreen).OnKeyPressed(event);
+            ((Screen1) currentScreen).onKeyPressed(event);
         } else if (currentScreen instanceof Screen2) {
-            ((Screen2) currentScreen).OnKeyPressed(event);
+            ((Screen2) currentScreen).onKeyPressed(event);
         }
     }
 
     public void onKeyReleased(KeyEvent event) {
         if (currentScreen instanceof Screen1) {
-            ((Screen1) currentScreen).OnKeyReleased(event);
+            ((Screen1) currentScreen).onKeyReleased(event);
         } else if (currentScreen instanceof Screen2) {
-            ((Screen2) currentScreen).OnKeyReleased(event);
+            ((Screen2) currentScreen).onKeyReleased(event);
         }
     }
 }

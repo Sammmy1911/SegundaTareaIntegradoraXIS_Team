@@ -32,6 +32,7 @@ public class Villager {
 
     private Position position;
     private int state;
+    private String currentTool; // Herramienta actual del jugador
 
     private List<Obstacle> obstacles;
 
@@ -49,6 +50,7 @@ public class Villager {
         this.hammer = new ArrayList<>();
 
         this.position = new Position(260, 170);
+        this.currentTool = "pickaxe"; // Herramienta inicial, por ejemplo
         this.obstacles = new ArrayList<>(); // Inicializar la lista de obstáculos
 
         // Carga de las imágenes de las animaciones
@@ -168,6 +170,32 @@ public class Villager {
             case F -> state = 5;
             case R -> state = 6;
             case H -> state = 7;
+            case P -> currentTool = "pickaxe"; // Herramienta para eliminar rocas
+            case M -> currentTool = "axe"; // Herramienta para eliminar árboles
+            case SPACE -> removeObstacle(); // Elimina el obstáculo usando la herramienta actual
+        }
+    }
+
+    private void removeObstacle() {
+        for (int i = 0; i < obstacles.size(); i++) {
+            Obstacle obstacle = obstacles.get(i);
+            // Verifica que la herramienta y el tipo de obstáculo coincidan
+            if ((currentTool.equals("pickaxe") && obstacle.getType().equals("rock")) ||
+                    (currentTool.equals("axe") && obstacle.getType().equals("tree"))) {
+                // Verifica que el `Villager` esté cerca del obstáculo
+                double obstacleX = obstacle.getX();
+                double obstacleY = obstacle.getY();
+                double obstacleWidth = obstacle.getWidth();
+                double obstacleHeight = obstacle.getHeight();
+                double villagerX = position.getX();
+                double villagerY = position.getY();
+                double interactionRange = 50; // Ajusta este valor según necesites
+
+                if (Math.abs(villagerX - obstacleX) < interactionRange && Math.abs(villagerY - obstacleY) < interactionRange) {
+                    obstacles.remove(i);
+                    break;
+                }
+            }
         }
     }
 
