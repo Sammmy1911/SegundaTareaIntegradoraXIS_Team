@@ -4,56 +4,40 @@ import com.example.ti2.model.Villager;
 import com.example.ti2.model.Obstacle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Screen1 {
+public class Screen2 {
     private Canvas canvas;
     private GraphicsContext graphicsContext;
     private Villager villager;
-    private Image backgroundImage;
     private List<Obstacle> obstacles;
-    private Runnable onChangeScreen; // Agregamos un Runnable para manejar el cambio de pantalla
 
-    public Screen1(Canvas canvas) {
+    public Screen2(Canvas canvas) {
         this.canvas = canvas;
         this.graphicsContext = this.canvas.getGraphicsContext2D();
         this.villager = new Villager(this.canvas);
-        this.backgroundImage = new Image("file:/C:/Users/sgall/Desktop/vambi/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/inside.png");
 
         // Define some obstacles
         this.obstacles = new ArrayList<>();
-        this.obstacles.add(new Obstacle(20, 20, 10, 800));
-        this.obstacles.add(new Obstacle(30, 20, 500, 100));
-        this.obstacles.add(new Obstacle(330, 120, 500, 50));
-        this.obstacles.add(new Obstacle(550, 1700, 10, 800));
+        this.obstacles.add(new Obstacle(50, 50, 20, 500));
+        this.obstacles.add(new Obstacle(100, 100, 300, 50));
+        this.obstacles.add(new Obstacle(200, 200, 400, 20));
+        this.obstacles.add(new Obstacle(300, 300, 20, 600));
 
         villager.setObstacles(obstacles);
     }
 
-    public void setOnChangeScreen(Runnable onChangeScreen) {
-        this.onChangeScreen = onChangeScreen;
-    }
-
     public void paint() {
-        graphicsContext.drawImage(backgroundImage, 0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         villager.paint();
         showPlayerPosition();
         printPlayerPosition();
         drawObstacles();
-        checkPositionForScreenChange();
-    }
-
-    private void checkPositionForScreenChange() {
-        if (villager.getPosition().getX() == 120 && villager.getPosition().getY() == 350) { // Cambio de coordenadas
-            if (onChangeScreen != null) {
-                onChangeScreen.run(); // Notificamos a WindowManager que debe cambiar de pantalla
-            }
-        }
     }
 
     private void showPlayerPosition() {
