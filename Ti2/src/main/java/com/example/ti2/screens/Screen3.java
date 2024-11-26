@@ -3,6 +3,7 @@ package com.example.ti2.screens;
 import com.example.ti2.model.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -19,11 +20,14 @@ public class Screen3 {
     private List<Crop> crops; // Lista de cultivos
     private int score; // Puntuación del jugador
     private AchievementPopup achievementPopup; // Popup de logros
-    private Runnable onChangeScreenTo1; // Agregar un Runnable para cambiar a Screen1
+    private Runnable onChangeScreenTo1; // Callback para cambiar a Screen1
 
     // Coordenadas del punto de referencia para volver a Screen1
     private double referencePoint1X = 20;
     private double referencePoint1Y = 360;
+
+    // Imagen de fondo
+    private Image backgroundImage;
 
     public Screen3(Canvas canvas) {
         this.canvas = canvas;
@@ -33,6 +37,9 @@ public class Screen3 {
         this.tools = new ArrayList<>();
         this.crops = new ArrayList<>();
         this.score = 0; // Inicializar la puntuación
+
+        // Cargar la imagen de fondo
+        this.backgroundImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/Grass_07-512x512.png");
 
         // Definir obstáculos y cultivos iniciales
         this.obstacles.add(new Obstacle(50, 50, 20, 800, "wall")); // Pared roja
@@ -89,8 +96,7 @@ public class Screen3 {
     }
 
     private void drawBackground() {
-        graphicsContext.setFill(Color.BLUE); // Establecer el fondo azul
-        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.drawImage(backgroundImage, 0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     private void showPlayerPosition() {
@@ -160,7 +166,7 @@ public class Screen3 {
         this.villager.OnKeyPressed(event);
 
         // Sembrar un cultivo si el villager está en un recuadro despejado y se presiona la tecla "P" o "O"
-        if (event.getCode() == KeyCode.P) {
+        if (event.getCode() == KeyCode.P || event.getCode() == KeyCode.O) {
             double villagerX = villager.getPosition().getX();
             double villagerY = villager.getPosition().getY();
             for (Crop crop : crops) {
@@ -173,44 +179,33 @@ public class Screen3 {
                         villager.addWheat(1);
                     } else if (crop.getType().equals("corn")) {
                         villager.addCorn(1);
+                    } else if (crop.getType().equals("cabbage")) {
+                        villager.addCabbage(1);
                     }
 
                     // Marcar logro como completado
-                    Achievement achievement = villager.getAchievementTree().findAchievement("Planta el primer cultivo");
-                    if (achievement != null && !achievement.isAchieved()) {
+                    Achievement achievement = villager.getAchievementTree().findAchievement("Planta 10 cultivos");
+                    if (achievement != null && (villager.getWheatCount() + villager.getCornCount() + villager.getCabbageCount() >= 10) && !achievement.isAchieved()) {
                         achievement.setAchieved(true);
                     }
                 }
             }
-        } else if (event.getCode() == KeyCode.O) {
-            double villagerX = villager.getPosition().getX();
-            double villagerY = villager.getPosition().getY();
-            // Sembrar repollo si el villager está en un recuadro despejado y se presiona la tecla "O"
-            String soilBeforePlantingPath = "file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/SUNNYSIDE_WORLD_CROPS_V0.01/ASSETS/soil_01.png";
-            String soilAfterPlantingPath = "file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/SUNNYSIDE_WORLD_CROPS_V0.01/ASSETS/soil_00.png";
-            String matureCropPathCabbage = "file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/SUNNYSIDE_WORLD_CROPS_V0.01/ASSETS/cabbage_03.png";
-
-            Crop newCrop = new Crop(villagerX, villagerY, "cabbage", soilBeforePlantingPath, soilAfterPlantingPath, matureCropPathCabbage, matureCropPathCabbage);
-            newCrop.plant(); // Sembrar el cultivo inmediatamente
-            crops.add(newCrop);
-            score += 10; // Añadir puntos a la puntuación (puedes ajustar este valor)
-            villager.addCabbage(1); // Actualizar el recurso de repollo
-
-            // Marcar logro como completado
-            Achievement achievement = villager.getAchievementTree().findAchievement("Planta el primer cultivo");
-            if (achievement != null && !achievement.isAchieved()) {
-                achievement.setAchieved(true);
-            }
-        } else if (event.getCode() == KeyCode.L) {
-            achievementPopup.showAchievements(); // Mostrar logros al presionar la tecla "L"
         }
+
+        // Verificar la posición del Villager para cambiar de pantalla
+        checkPositionForScreenChange();
     }
 
     public void onKeyReleased(KeyEvent event) {
         this.villager.onKeyReleased(event);
     }
 
+    public void clear() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
     public void onKeyTyped(KeyEvent event) {
-        checkPositionForScreenChange(); // Verificar el cambio de pantalla en cada evento de tecla
+        // Verificar el cambio de pantalla en cada evento de tecla
+        checkPositionForScreenChange();
     }
 }

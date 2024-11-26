@@ -17,10 +17,11 @@ public class WindowManager {
         this.screen3 = new Screen3(canvas);
         this.currentScreen = screen1; // Set initial screen
 
-        // Establecer los cambios de pantalla en Screen1 y Screen2
+        // Establecer los cambios de pantalla en Screen1, Screen2 y Screen3
         screen1.setOnChangeScreenTo2(this::switchToScreen2);
         screen2.setOnChangeScreenTo1(this::switchToScreen1);
         screen2.setOnChangeScreenTo3(this::switchToScreen3);
+        screen3.setOnChangeScreenTo1(this::switchToScreen1);
     }
 
     public void switchToScreen1() {
@@ -40,11 +41,11 @@ public class WindowManager {
 
     private void clearCurrentScreen() {
         if (currentScreen instanceof Screen1) {
-            ((Screen1) currentScreen).paint();
+            ((Screen1) currentScreen).clear();
         } else if (currentScreen instanceof Screen2) {
-            ((Screen2) currentScreen).paint();
+            ((Screen2) currentScreen).clear();
         } else if (currentScreen instanceof Screen3) {
-            ((Screen3) currentScreen).paint();
+            ((Screen3) currentScreen).clear();
         }
     }
 
@@ -59,12 +60,19 @@ public class WindowManager {
     }
 
     public void onKeyPressed(KeyEvent event) {
-        if (currentScreen instanceof Screen1) {
-            ((Screen1) currentScreen).onKeyPressed(event);
-        } else if (currentScreen instanceof Screen2) {
-            ((Screen2) currentScreen).onKeyPressed(event);
-        } else if (currentScreen instanceof Screen3) {
-            ((Screen3) currentScreen).onKeyPressed(event);
+        switch (event.getCode()) {
+            case DIGIT1 -> switchToScreen1();
+            case DIGIT2 -> switchToScreen2();
+            case DIGIT3 -> switchToScreen3();
+            default -> {
+                if (currentScreen instanceof Screen1) {
+                    ((Screen1) currentScreen).onKeyPressed(event);
+                } else if (currentScreen instanceof Screen2) {
+                    ((Screen2) currentScreen).onKeyPressed(event);
+                } else if (currentScreen instanceof Screen3) {
+                    ((Screen3) currentScreen).onKeyPressed(event);
+                }
+            }
         }
     }
 
@@ -78,3 +86,4 @@ public class WindowManager {
         }
     }
 }
+

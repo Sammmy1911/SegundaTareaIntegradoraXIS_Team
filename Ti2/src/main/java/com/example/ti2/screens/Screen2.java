@@ -155,6 +155,10 @@ public class Screen2 {
         }
     }
 
+    public void clear() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
     public void onKeyPressed(KeyEvent event) {
         this.villager.OnKeyPressed(event);
     }
