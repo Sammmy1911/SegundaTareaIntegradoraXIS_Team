@@ -23,10 +23,6 @@ public class Screen2 {
 
         // Define some obstacles
         this.obstacles = new ArrayList<>();
-        this.obstacles.add(new Obstacle(50, 50, 20, 500));
-        this.obstacles.add(new Obstacle(100, 100, 300, 50));
-        this.obstacles.add(new Obstacle(200, 200, 400, 20));
-        this.obstacles.add(new Obstacle(300, 300, 20, 600));
 
         villager.setObstacles(obstacles);
     }
