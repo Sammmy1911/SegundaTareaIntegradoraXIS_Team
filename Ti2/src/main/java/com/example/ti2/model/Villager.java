@@ -136,6 +136,14 @@ public class Villager {
             facingRight = false;
         }
 
+        // Limitar el movimiento a los bordes del canvas
+        double canvasWidth = canvas.getWidth();
+        double canvasHeight = canvas.getHeight();
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+        if (newX > canvasWidth - 10) newX = canvasWidth - 10; // Ajuste para evitar que el personaje se salga del borde
+        if (newY > canvasHeight - 10) newY = canvasHeight - 10; // Ajuste para evitar que el personaje se salga del borde
+
         // Comprobar colisiones
         boolean collisionDetected = false;
         for (Obstacle obstacle : obstacles) {
@@ -212,7 +220,7 @@ public class Villager {
             // Verifica que la herramienta y el tipo de obstáculo coincidan
             if ((currentTool.equals("pickaxe") && obstacle.getType().equals("rock")) ||
                     (currentTool.equals("axe") && obstacle.getType().equals("tree"))) {
-                // Verifica que el `Villager` esté cerca del obstáculo
+                // Verifica que el Villager esté cerca del obstáculo
                 double obstacleX = obstacle.getX();
                 double obstacleY = obstacle.getY();
                 double obstacleWidth = obstacle.getWidth();
@@ -263,5 +271,3 @@ public class Villager {
         this.tools = tools;
     }
 }
-
-

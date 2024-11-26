@@ -17,7 +17,7 @@ public class Screen1 {
     private Villager villager;
     private Image backgroundImage;
     private List<Obstacle> obstacles;
-    private Runnable onChangeScreen;
+    private Runnable onChangeScreenTo2;
 
     public Screen1(Canvas canvas) {
         this.canvas = canvas;
@@ -30,12 +30,16 @@ public class Screen1 {
         this.obstacles.add(new Obstacle(30, 20, 500, 100, "wall"));
         this.obstacles.add(new Obstacle(330, 120, 500, 50, "wall"));
         this.obstacles.add(new Obstacle(550, 1700, 10, 800, "wall"));
+        this.obstacles.add(new Obstacle(300, 270, 600, 20, "wall"));
+        this.obstacles.add(new Obstacle(260, 310, 600, 20, "wall"));
+        this.obstacles.add(new Obstacle(290, 290, 600, 20, "wall"));
+        this.obstacles.add(new Obstacle(170, 350, 600, 20, "wall"));
 
         villager.setObstacles(obstacles);
     }
 
-    public void setOnChangeScreen(Runnable onChangeScreen) {
-        this.onChangeScreen = onChangeScreen;
+    public void setOnChangeScreenTo2(Runnable onChangeScreenTo2) {
+        this.onChangeScreenTo2 = onChangeScreenTo2;
     }
 
     public void paint() {
@@ -44,7 +48,7 @@ public class Screen1 {
         villager.paint();
         showPlayerPosition();
         printPlayerPosition();
-        drawObstacles();
+        //drawObstacles(); // No dibujar los obstáculos
         checkPositionForScreenChange();
     }
 
@@ -65,17 +69,10 @@ public class Screen1 {
         System.out.println("Posición del jugador: (" + villager.getPosition().getX() + ", " + villager.getPosition().getY() + ")");
     }
 
-    private void drawObstacles() {
-        graphicsContext.setFill(Color.RED);
-        for (Obstacle obstacle : obstacles) {
-            graphicsContext.fillRect(obstacle.getX(), obstacle.getY(), obstacle.getWidth(), obstacle.getHeight());
-        }
-    }
-
     private void checkPositionForScreenChange() {
         if (villager.getPosition().getX() == 120 && villager.getPosition().getY() == 350) { // Cambio de coordenadas
-            if (onChangeScreen != null) {
-                onChangeScreen.run(); // Notificamos a WindowManager que debe cambiar de pantalla
+            if (onChangeScreenTo2 != null) {
+                onChangeScreenTo2.run(); // Notificamos a WindowManager que debe cambiar a Screen2
             }
         }
     }
