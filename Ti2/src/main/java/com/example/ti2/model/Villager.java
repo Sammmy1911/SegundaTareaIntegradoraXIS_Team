@@ -1,178 +1,187 @@
 package com.example.ti2.model;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Villager {
     private Canvas canvas;
     private GraphicsContext graphicsContext;
 
-    // Arreglos de las animaciones del personaje
     private ArrayList<Image> idle;
     private ArrayList<Image> walk;
-    private ArrayList<Image> runs;
-    private ArrayList<Image> hammer;
-    private ArrayList<Image> axe;
-    private ArrayList<Image> dig;
-    private ArrayList<Image> roll;
-    private ArrayList<Image> mine;
-
     private int frame = 0;
     private boolean facingRight = true;
 
     private boolean upPressed;
-    private boolean down;
-    private boolean right;
-    private boolean left;
+    private boolean downPressed;
+    private boolean rightPressed;
+    private boolean leftPressed;
 
     private Position position;
     private int state;
+
+    private double playerWidth;
+    private double playerHeight;
+
+    private List<Rectangle> obstacles; // Lista de obstáculos para detección de colisiones
 
     public Villager(Canvas canvas) {
         this.canvas = canvas;
         this.graphicsContext = this.canvas.getGraphicsContext2D();
         this.state = 0;
-        this.walk = new ArrayList<>();
         this.idle = new ArrayList<>();
-        this.runs = new ArrayList<>();
-        this.mine = new ArrayList<>();
-        this.axe = new ArrayList<>();
-        this.dig = new ArrayList<>();
-        this.roll = new ArrayList<>();
-        this.hammer = new ArrayList<>();
+        this.walk = new ArrayList<>();
 
-        this.position = new Position(100, 100);
+        this.position = new Position(250, 250);
 
-        // Carga de las imágenes de las animaciones
+        // Inicializar obstáculos vacíos
+        this.obstacles = new ArrayList<>();
+
+        // Carga de imágenes para animaciones
         for (int i = 0; i <= 8; i++) {
             Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/IDLE/v-idle-" + i + ".png"));
             this.idle.add(image);
         }
         for (int i = 0; i <= 6; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/RUN/v-run-" + i + ".png"));
-            this.runs.add(image);
-        }
-        for (int i = 0; i <= 6; i++) {
             Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/WALK/v-walk-" + i + ".png"));
             this.walk.add(image);
         }
-        for (int i = 0; i <= 8; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/MINE/v-mine-" + i + ".png"));
-            this.mine.add(image);
-        }
-        for (int i = 0; i <= 8; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/AXE/v-axe-" + i + ".png"));
-            this.axe.add(image);
-        }
-        for (int i = 0; i <= 11; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/DIG/v-dig-" + i + ".png"));
-            this.dig.add(image);
-        }
-        for (int i = 0; i <= 6; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/ROLL/v-roll-" + i + ".png"));
-            this.roll.add(image);
-        }
-        for (int i = 0; i <= 6; i++) {
-            Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/HAMMER/v-hammer-" + i + ".png"));
-            this.hammer.add(image);
-        }
+
+        // Establecer el tamaño inicial del jugador
+        this.playerWidth = this.idle.get(0).getWidth();
+        this.playerHeight = this.idle.get(0).getHeight();
     }
 
     public void paint() {
         onMove();
 
-        // Incremento del frame para la animación
+        // Incrementar frame para la animación
         frame++;
 
-        // Voltea el sprite si es necesario
+        // Guardar contexto gráfico para manipular orientación
         graphicsContext.save();
         if (!facingRight) {
-            graphicsContext.translate(position.getX() * 2 + idle.get(0).getWidth(), 0);
+            graphicsContext.translate(position.getX() * 2 + playerWidth, 0);
             graphicsContext.scale(-1, 1);
         }
 
-        // Dibuja el personaje según el estado
+        // Dibujar el personaje según el estado
         switch (state) {
-            case 0 -> graphicsContext.drawImage(idle.get(frame % idle.size()), position.getX(), position.getY());
-            case 1 -> graphicsContext.drawImage(walk.get(frame % walk.size()), position.getX(), position.getY());
-            case 2 -> graphicsContext.drawImage(runs.get(frame % runs.size()), position.getX(), position.getY());
-            case 3 -> graphicsContext.drawImage(mine.get(frame % mine.size()), position.getX(), position.getY());
-            case 4 -> graphicsContext.drawImage(axe.get(frame % axe.size()), position.getX(), position.getY());
-            case 5 -> graphicsContext.drawImage(dig.get(frame % dig.size()), position.getX(), position.getY());
-            case 6 -> graphicsContext.drawImage(roll.get(frame % roll.size()), position.getX(), position.getY());
-            case 7 -> graphicsContext.drawImage(hammer.get(frame % hammer.size()), position.getX(), position.getY());
+            case 0 -> graphicsContext.drawImage(idle.get(frame % idle.size()), position.getX(), position.getY(), playerWidth, playerHeight);
+            case 1 -> graphicsContext.drawImage(walk.get(frame % walk.size()), position.getX(), position.getY(), playerWidth, playerHeight);
         }
 
         graphicsContext.restore();
     }
 
     public void onMove() {
-        if (upPressed) position.setY(position.getY() - 10);
-        if (down) position.setY(position.getY() + 10);
-        if (right) {
-            position.setX(position.getX() + 10);
-            facingRight = true; // Cambia dirección a la derecha
+        double newX = position.getX();
+        double newY = position.getY();
+
+        if (upPressed) newY -= 5; // Próxima posición hacia arriba
+        if (downPressed) newY += 5; // Próxima posición hacia abajo
+        if (rightPressed) {
+            newX += 5; // Próxima posición hacia la derecha
+            facingRight = true;
         }
-        if (left) {
-            position.setX(position.getX() - 10);
-            facingRight = false; // Cambia dirección a la izquierda
+        if (leftPressed) {
+            newX -= 5; // Próxima posición hacia la izquierda
+            facingRight = false;
+        }
+
+        // Comprobar colisiones con los obstáculos
+        Rectangle newBounds = new Rectangle(newX, newY, playerWidth, playerHeight);
+        boolean collisionDetected = false;
+
+        for (Rectangle obstacle : obstacles) {
+            if (newBounds.getBoundsInParent().intersects(obstacle.getBoundsInParent())) {
+                collisionDetected = true;
+                break;
+            }
+        }
+
+        // Actualizar la posición solo si no hay colisión
+        if (!collisionDetected) {
+            position.setX(newX);
+            position.setY(newY);
+        }
+
+        // Verificar si el personaje alcanza las coordenadas para cambiar de pantalla
+        if (newX == 165 && newY == 215) {
+            System.out.println("Posición alcanzada. Cambiando a pantalla 2.");
+            // Aquí llamaríamos a un método para cambiar de pantalla
+            // Por ejemplo, utilizando un evento o una bandera en la clase ScreenManager
         }
     }
+
 
     public void OnKeyPressed(KeyEvent event) {
         switch (event.getCode()) {
             case UP -> {
-                state = 1;
+                state = 1; // Estado caminando
                 upPressed = true;
-            }
-            case RIGHT -> {
-                state = 1;
-                right = true;
-            }
-            case LEFT -> {
-                state = 1;
-                left = true;
             }
             case DOWN -> {
                 state = 1;
-                down = true;
+                downPressed = true;
             }
-            case S -> state = 2; // Correr
-            case A -> state = 3; // Minar
-            case D -> state = 4; // Usar el hacha
-            case F -> state = 5; // Cavar
-            case R -> state = 6; // Rodar
-            case H -> state = 7; // Usar el martillo
+            case RIGHT -> {
+                state = 1;
+                rightPressed = true;
+            }
+            case LEFT -> {
+                state = 1;
+                leftPressed = true;
+            }
         }
     }
 
     public void onKeyReleased(KeyEvent event) {
         switch (event.getCode()) {
             case UP -> {
-                state = 0;
+                state = 0; // Estado en reposo
                 upPressed = false;
             }
             case DOWN -> {
                 state = 0;
-                down = false;
+                downPressed = false;
             }
             case RIGHT -> {
                 state = 0;
-                right = false;
+                rightPressed = false;
             }
             case LEFT -> {
                 state = 0;
-                left = false;
+                leftPressed = false;
             }
-            case S, A, D, F, R, H -> state = 0;
         }
     }
 
     public Position getPosition() {
         return position;
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(position.getX(), position.getY(), playerWidth, playerHeight);
+    }
+
+    public void setObstacles(List<Rectangle> obstacles) {
+        this.obstacles = obstacles;
+    }
+
+    public void resize(double scaleFactor) {
+        this.playerWidth = this.idle.get(0).getWidth() * scaleFactor;
+        this.playerHeight = this.idle.get(0).getHeight() * scaleFactor;
+    }
+
+    // Método para obtener la posición exacta como una cadena
+    public String getPositionAsString() {
+        return "Posición del personaje: X = " + position.getX() + ", Y = " + position.getY();
     }
 }
