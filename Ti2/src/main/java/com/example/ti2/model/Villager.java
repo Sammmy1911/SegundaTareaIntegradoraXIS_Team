@@ -33,8 +33,10 @@ public class Villager {
     private Position position;
     private int state;
     private String currentTool; // Herramienta actual del jugador
+    private List<String> collectedTools; // Lista de herramientas recogidas por el jugador
 
     private List<Obstacle> obstacles;
+    private List<Tool> tools;
 
     public Villager(Canvas canvas) {
         this.canvas = canvas;
@@ -50,8 +52,10 @@ public class Villager {
         this.hammer = new ArrayList<>();
 
         this.position = new Position(260, 170);
-        this.currentTool = "pickaxe"; // Herramienta inicial, por ejemplo
+        this.currentTool = ""; // Sin herramientas iniciales
+        this.collectedTools = new ArrayList<>(); // Inicializar la lista de herramientas recogidas
         this.obstacles = new ArrayList<>(); // Inicializar la lista de obstáculos
+        this.tools = new ArrayList<>(); // Inicializar la lista de herramientas en el suelo
 
         // Carga de las imágenes de las animaciones
         for (int i = 0; i <= 8; i++) {
@@ -90,6 +94,7 @@ public class Villager {
 
     public void paint() {
         onMove();
+        checkToolCollection();
 
         // Incremento del frame para la animación
         frame++;
@@ -116,7 +121,7 @@ public class Villager {
         graphicsContext.restore();
     }
 
-    public void onMove() {
+    private void onMove() {
         double newX = position.getX();
         double newY = position.getY();
 
@@ -146,6 +151,23 @@ public class Villager {
         }
     }
 
+    private void checkToolCollection() {
+        for (int i = 0; i < tools.size(); i++) {
+            Tool tool = tools.get(i);
+            double toolX = tool.getX();
+            double toolY = tool.getY();
+            double villagerX = position.getX();
+            double villagerY = position.getY();
+            double interactionRange = 10; // Ajusta este valor según necesites
+
+            if (Math.abs(villagerX - toolX) < interactionRange && Math.abs(villagerY - toolY) < interactionRange) {
+                collectedTools.add(tool.getType());
+                tools.remove(i);
+                break;
+            }
+        }
+    }
+
     public void OnKeyPressed(KeyEvent event) {
         switch (event.getCode()) {
             case UP -> {
@@ -170,8 +192,16 @@ public class Villager {
             case F -> state = 5;
             case R -> state = 6;
             case H -> state = 7;
-            case P -> currentTool = "pickaxe"; // Herramienta para eliminar rocas
-            case M -> currentTool = "axe"; // Herramienta para eliminar árboles
+            case P -> {
+                if (collectedTools.contains("pickaxe")) {
+                    currentTool = "pickaxe"; // Herramienta para eliminar rocas
+                }
+            }
+            case M -> {
+                if (collectedTools.contains("axe")) {
+                    currentTool = "axe"; // Herramienta para eliminar árboles
+                }
+            }
             case SPACE -> removeObstacle(); // Elimina el obstáculo usando la herramienta actual
         }
     }
@@ -228,4 +258,10 @@ public class Villager {
     public void setObstacles(List<Obstacle> obstacles) {
         this.obstacles = obstacles;
     }
+
+    public void setTools(List<Tool> tools) {
+        this.tools = tools;
+    }
 }
+
+
