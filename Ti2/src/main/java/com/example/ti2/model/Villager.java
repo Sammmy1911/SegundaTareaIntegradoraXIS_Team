@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +36,13 @@ public class Villager {
     private String currentTool; // Herramienta actual del jugador
     private List<String> collectedTools; // Lista de herramientas recogidas por el jugador
 
+    private int wheatCount; // Contador de trigo
+    private int cornCount; // Contador de maíz
+    private int cabbageCount; // Contador de repollo
+
     private List<Obstacle> obstacles;
     private List<Tool> tools;
+    private AchievementTree achievementTree; // Árbol de logros
 
     public Villager(Canvas canvas) {
         this.canvas = canvas;
@@ -56,6 +62,13 @@ public class Villager {
         this.collectedTools = new ArrayList<>(); // Inicializar la lista de herramientas recogidas
         this.obstacles = new ArrayList<>(); // Inicializar la lista de obstáculos
         this.tools = new ArrayList<>(); // Inicializar la lista de herramientas en el suelo
+
+        this.wheatCount = 0; // Inicializar el contador de trigo
+        this.cornCount = 0; // Inicializar el contador de maíz
+        this.cabbageCount = 0; // Inicializar el contador de repollo
+
+        this.achievementTree = new AchievementTree(); // Inicializar el árbol de logros
+        initializeAchievements(); // Inicializar los logros
 
         // Carga de las imágenes de las animaciones
         for (int i = 0; i <= 8; i++) {
@@ -90,6 +103,11 @@ public class Villager {
             Image image = new Image(getClass().getResourceAsStream("/AssetsPerson/Villager/HAMMER/v-hammer-" + i + ".png"));
             this.hammer.add(image);
         }
+    }
+
+    private void initializeAchievements() {
+        achievementTree.addAchievement(new Achievement("Elimina el primer obstáculo", "Logrado al eliminar el primer obstáculo"));
+        achievementTree.addAchievement(new Achievement("Planta el primer cultivo", "Logrado al plantar el primer cultivo"));
     }
 
     public void paint() {
@@ -231,6 +249,12 @@ public class Villager {
 
                 if (Math.abs(villagerX - obstacleX) < interactionRange && Math.abs(villagerY - obstacleY) < interactionRange) {
                     obstacles.remove(i);
+
+                    // Marcar logro como completado
+                    Achievement achievement = achievementTree.findAchievement("Elimina el primer obstáculo");
+                    if (achievement != null) {
+                        achievement.setAchieved(true);
+                    }
                     break;
                 }
             }
@@ -263,11 +287,54 @@ public class Villager {
         return position;
     }
 
+    public int getWheatCount() {
+        return wheatCount;
+    }
+
+    public int getCornCount() {
+        return cornCount;
+    }
+
+    public int getCabbageCount() {
+        return cabbageCount;
+    }
+
+    public void addWheat(int amount) {
+        wheatCount += amount;
+    }
+
+    public void addCorn(int amount) {
+        cornCount += amount;
+    }
+
+    public void addCabbage(int amount) {
+        cabbageCount += amount;
+    }
+
+    public AchievementTree getAchievementTree() {
+        return achievementTree;
+    }
+
     public void setObstacles(List<Obstacle> obstacles) {
         this.obstacles = obstacles;
     }
 
     public void setTools(List<Tool> tools) {
         this.tools = tools;
+    }
+
+    public void showResources(GraphicsContext graphicsContext) {
+        graphicsContext.setFill(Color.BLACK);
+        graphicsContext.fillText("Trigo: " + wheatCount, 10, 40);
+        graphicsContext.fillText("Maíz: " + cornCount, 10, 60);
+        graphicsContext.fillText("Repollo: " + cabbageCount, 10, 80);
+    }
+
+    public void checkAchievements(GraphicsContext graphicsContext) {
+        graphicsContext.setFill(Color.BLACK);
+        graphicsContext.fillText("Logros:", 10, 100);
+
+        // Mostrar logros
+        achievementTree.displayAchievements();
     }
 }

@@ -21,6 +21,10 @@ public class Screen2 {
     private List<Tool> tools;
     private Random random;
     private Image toolImage; // Imagen de la herramienta
+    private Image floorImage; // Imagen del piso
+    private Image backgroundImage; // Imagen de fondo
+    private Image treeReplacementImage; // Imagen para reemplazar los árboles
+    private Image rockReplacementImage; // Imagen para reemplazar las rocas
     private Runnable onChangeScreenTo1; // Agregar un Runnable para cambiar a Screen1
     private Runnable onChangeScreenTo3; // Agregar un Runnable para cambiar a Screen3
 
@@ -41,6 +45,10 @@ public class Screen2 {
         villager.setObstacles(obstacles);
         villager.setTools(tools);
         this.toolImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/descarga.jpg"); // Cargar la imagen de la herramienta
+        this.backgroundImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/Grass_07-512x512.png"); // Cargar la nueva imagen de fondo
+        this.floorImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/plasma/floor.png"); // Cargar la nueva imagen del piso
+        this.treeReplacementImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/plasma/0.png"); // Cargar la nueva imagen para los árboles
+        this.rockReplacementImage = new Image("file:/C:/Users/sgall/Desktop/Mongo/SegundaTareaIntegradoraXIS_Team/Ti2/src/main/resources/AssetsPerson/PAINT/plasma/1.png"); // Cargar la nueva imagen para las rocas
     }
 
     public void setOnChangeScreenTo1(Runnable onChangeScreenTo1) {
@@ -72,6 +80,7 @@ public class Screen2 {
 
     public void paint() {
         clearCanvas();
+        drawFloor();
         drawBackground();
         villager.paint();
         showPlayerPosition();
@@ -87,8 +96,11 @@ public class Screen2 {
     }
 
     private void drawBackground() {
-        graphicsContext.setFill(Color.WHITE);
-        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.drawImage(backgroundImage, 0, 0, canvas.getWidth(), canvas.getHeight()); // Dibujar la nueva imagen de fondo
+    }
+
+    private void drawFloor() {
+        graphicsContext.drawImage(floorImage, 0, 0, canvas.getWidth(), canvas.getHeight()); // Dibujar la nueva imagen del piso
     }
 
     private void showPlayerPosition() {
@@ -103,11 +115,10 @@ public class Screen2 {
     private void drawObstacles() {
         for (Obstacle obstacle : obstacles) {
             if (obstacle.getType().equals("rock")) {
-                graphicsContext.setFill(Color.GRAY);
+                graphicsContext.drawImage(rockReplacementImage, obstacle.getX(), obstacle.getY(), obstacle.getWidth(), obstacle.getHeight());
             } else if (obstacle.getType().equals("tree")) {
-                graphicsContext.setFill(Color.GREEN);
+                graphicsContext.drawImage(treeReplacementImage, obstacle.getX(), obstacle.getY(), obstacle.getWidth(), obstacle.getHeight());
             }
-            graphicsContext.fillRect(obstacle.getX(), obstacle.getY(), obstacle.getWidth(), obstacle.getHeight());
         }
     }
 
