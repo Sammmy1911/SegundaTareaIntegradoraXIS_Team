@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Villager {
     private Canvas canvas;
@@ -32,6 +33,8 @@ public class Villager {
     private Position position;
     private int state;
 
+    private List<Obstacle> obstacles;
+
     public Villager(Canvas canvas) {
         this.canvas = canvas;
         this.graphicsContext = this.canvas.getGraphicsContext2D();
@@ -45,7 +48,8 @@ public class Villager {
         this.roll = new ArrayList<>();
         this.hammer = new ArrayList<>();
 
-        this.position = new Position(100, 100);
+        this.position = new Position(260, 170);
+        this.obstacles = new ArrayList<>(); // Inicializar la lista de obstáculos
 
         // Carga de las imágenes de las animaciones
         for (int i = 0; i <= 8; i++) {
@@ -111,15 +115,32 @@ public class Villager {
     }
 
     public void onMove() {
-        if (upPressed) position.setY(position.getY() - 10);
-        if (down) position.setY(position.getY() + 10);
+        double newX = position.getX();
+        double newY = position.getY();
+
+        if (upPressed) newY -= 10;
+        if (down) newY += 10;
         if (right) {
-            position.setX(position.getX() + 10);
-            facingRight = true; // Cambia dirección a la derecha
+            newX += 10;
+            facingRight = true;
         }
         if (left) {
-            position.setX(position.getX() - 10);
-            facingRight = false; // Cambia dirección a la izquierda
+            newX -= 10;
+            facingRight = false;
+        }
+
+        // Comprobar colisiones
+        boolean collisionDetected = false;
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.intersects(newX, newY, 10, 10)) {
+                collisionDetected = true;
+                break;
+            }
+        }
+
+        if (!collisionDetected) {
+            position.setX(newX);
+            position.setY(newY);
         }
     }
 
@@ -141,12 +162,12 @@ public class Villager {
                 state = 1;
                 down = true;
             }
-            case S -> state = 2; // Correr
-            case A -> state = 3; // Minar
-            case D -> state = 4; // Usar el hacha
-            case F -> state = 5; // Cavar
-            case R -> state = 6; // Rodar
-            case H -> state = 7; // Usar el martillo
+            case S -> state = 2;
+            case A -> state = 3;
+            case D -> state = 4;
+            case F -> state = 5;
+            case R -> state = 6;
+            case H -> state = 7;
         }
     }
 
@@ -174,5 +195,9 @@ public class Villager {
 
     public Position getPosition() {
         return position;
+    }
+
+    public void setObstacles(List<Obstacle> obstacles) {
+        this.obstacles = obstacles;
     }
 }
